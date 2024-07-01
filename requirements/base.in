@@ -1,0 +1,17 @@
+asyncio
+aiogram
+base58
+colorama
+django
+django-model-utils
+httpx
+lexicon
+mnemonic
+psycopg2-binary
+pydantic
+python-dotenv
+solana
+solders
+web3
+gunicorn
+wait-for-it
