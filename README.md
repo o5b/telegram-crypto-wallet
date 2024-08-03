@@ -142,39 +142,3 @@ The database data will be stored in the parent folder of the project root folder
 
 
 ## After run, the wallet will be available on Telegram
-
-## I18N
-
-https://docs.aiogram.dev/en/latest/utils/i18n.html
-
-### Step 1: Extract messages
-
-pybabel extract --input-dirs=./bot -o bot/locales/messages.pot
-
-### Step 2: Init language
-
-pybabel init -i bot/locales/messages.pot -d bot/locales -D messages -l en
-
-pybabel init -i bot/locales/messages.pot -d bot/locales -D messages -l ru
-
-### Step 3: Translate texts
-
-Just open the file named locales/{language}/LC_MESSAGES/messages.po and write translations
-
-### Step 4: Compile translations
-
-pybabel compile -d bot/locales -D messages
-
-### Step 5: Updating messages
-
-When you change the code of your bot you need to update po & mo files
-
-Step 5.1: regenerate pot file: command from step 1
-
-Step 5.2: update po files
-
-pybabel update -d bot/locales -D messages -i bot/locales/messages.pot
-
-Step 5.3: update your translations: location and tools you know from step 3
-
-Step 5.4: compile mo files: command from step 4
