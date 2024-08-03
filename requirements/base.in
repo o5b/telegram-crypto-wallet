@@ -1,17 +1,20 @@
 asyncio
 aiogram
 base58
-colorama
+# colorama
 django
 django-model-utils
+django-cleanup
+django-extensions
 httpx
-lexicon
+# lexicon
 mnemonic
 psycopg2-binary
-pydantic
+# pydantic
 python-dotenv
 solana
 solders
-web3
 gunicorn
+uvicorn
 wait-for-it
+pillow
