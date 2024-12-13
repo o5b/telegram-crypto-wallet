@@ -316,7 +316,6 @@ async def process_transfer_amount(message: Message, state: FSMContext) -> None:
                     sender_address,
                     sender_private_key,
                     recipient_address,
-                    mint,
                     amount,
                     http_client,
                 )

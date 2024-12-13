@@ -1,5 +1,7 @@
 # Telegram Wallet
 
+## The cryptocurrency wallet is under development and is not recommended for use
+
 ## Installation
 
 ```bash
@@ -67,9 +69,7 @@ DJANGO_SUPERUSER_EMAIL=admin@example.com
 
 For local run without docker DJANGO DEBUG in True
 
-If `postgresql` is selected as the database, then you can run it in Docker.
-
-### Running a container in docker `postgresql`
+### If `postgresql` is selected as the database, then you can run it in Docker:
 
 ```bash
 cd telegram-crypto-wallet/compose/
@@ -88,6 +88,7 @@ source venv/bin/activate
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
+python manage.py collectstatic
 ```
 
 ### Running Django
@@ -140,5 +141,10 @@ Now you can login to the admin site: https://your_domain/admin/
 
 The database data will be stored in the parent folder of the project root folder.
 
-
 ## After run, the wallet will be available on Telegram
+
+### Demo
+
+#### Transfer Sol
+
+![demo](docs/demo/sol_transfer.gif)

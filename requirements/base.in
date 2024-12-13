@@ -7,10 +7,8 @@ django-model-utils
 django-cleanup
 django-extensions
 httpx
-# lexicon
 mnemonic
 psycopg2-binary
-# pydantic
 python-dotenv
 solana
 solders
@@ -18,3 +16,4 @@ gunicorn
 uvicorn
 wait-for-it
 pillow
+requests

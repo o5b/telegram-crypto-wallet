@@ -25,12 +25,18 @@ from solders.system_program import TransferParams, transfer
 from solders.sysvar import RENT
 from solders.transaction_status import TransactionConfirmationStatus
 from spl.token.constants import (ASSOCIATED_TOKEN_PROGRAM_ID,
-                                 TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID)
+    # TOKEN_2022_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+)
 
 from bot.config import LAMPORT_TO_SOL_RATIO, SOLANA_NODE_URL
 from bot.validators import (is_valid_amount, is_valid_private_key,
                             is_valid_wallet_address)
 from logger_config import logger
+
+
+TOKEN_2022_PROGRAM_ID: Pubkey = Pubkey.from_string("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
+"""Public key that identifies the SPL token program."""
 
 # Например, установить таймаут на чтение ответа 120 секунд, таймаут на соединение 20 секунд
 timeout_settings = httpx.Timeout(read=120.0, connect=20.0, write=None, pool=None)

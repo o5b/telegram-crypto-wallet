@@ -15,6 +15,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-_@lce#i^+a^+r$a#fl)+k*qu&(jx!n0f3nph4xez2j)@y=_#-0')
 DEBUG = bool(int(os.getenv('DJANGO_DEBUG', 0)))
+print(f'DEBUG={DEBUG}')
 # DEBUG = True    # for local dev
 ALLOWED_HOSTS = [os.getenv('DJANGO_ALLOWED_HOSTS', '*')]
 ADMINS = (('Admin', 'admin.com'),)
