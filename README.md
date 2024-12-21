@@ -148,3 +148,7 @@ The database data will be stored in the parent folder of the project root folder
 #### Transfer Sol
 
 ![demo](docs/demo/sol_transfer.gif)
+
+#### Transfer Spl-token
+
+![demo](docs/demo/spl-transfer.gif)

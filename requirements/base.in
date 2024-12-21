@@ -1,7 +1,6 @@
 asyncio
 aiogram
 base58
-# colorama
 django
 django-model-utils
 django-cleanup

@@ -15,7 +15,8 @@ from PIL import Image
 from solana.rpc import commitment as solana_commitment
 from solana.rpc.async_api import AsyncClient
 from solana.rpc.types import TokenAccountOpts, TxOpts
-from solana.transaction import Transaction
+# from solana.transaction import Transaction
+from solders.transaction import Transaction
 from solders.instruction import AccountMeta, Instruction
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
@@ -24,6 +25,7 @@ from solders.system_program import ID as SYS_PROGRAM_ID
 from solders.system_program import TransferParams, transfer
 from solders.sysvar import RENT
 from solders.transaction_status import TransactionConfirmationStatus
+from solders.message import Message
 from spl.token.constants import (ASSOCIATED_TOKEN_PROGRAM_ID,
     # TOKEN_2022_PROGRAM_ID,
     TOKEN_PROGRAM_ID,
@@ -258,7 +260,20 @@ async def transfer_sol_token(sender_address: str, sender_private_key: str, recip
 
     sender_keypair = Keypair.from_seed(bytes.fromhex(sender_private_key))
 
-    txn = Transaction().add(
+    # txn = Transaction().add(
+    #     transfer(
+    #         TransferParams(
+    #             from_pubkey=sender_keypair.pubkey(),
+    #             to_pubkey=Pubkey.from_string(recipient_address),
+    #             # Количество лампортов для перевода, преобразованное из суммы SOL.
+    #             lamports=int(amount * LAMPORT_TO_SOL_RATIO),
+    #         )
+    #     )
+    # )
+
+    # send_transaction_response = await client.send_transaction(txn, sender_keypair)
+
+    params = [
         transfer(
             TransferParams(
                 from_pubkey=sender_keypair.pubkey(),
@@ -267,9 +282,11 @@ async def transfer_sol_token(sender_address: str, sender_private_key: str, recip
                 lamports=int(amount * LAMPORT_TO_SOL_RATIO),
             )
         )
-    )
+    ]
 
-    send_transaction_response = await client.send_transaction(txn, sender_keypair)
+    msg = Message(params, sender_keypair.pubkey())
+    latest_blockhash = (await client.get_latest_blockhash()).value.blockhash
+    send_transaction_response = await client.send_transaction(Transaction([sender_keypair], msg, latest_blockhash))
 
     confirm_transaction_response = await client.confirm_transaction(send_transaction_response.value)
 
@@ -435,7 +452,8 @@ async def transfer_spl_token(
         if not token_program_public_key:
             raise Exception("Token program not found")
 
-        transaction = Transaction()
+        # transaction = Transaction()
+        params = []
 
         opts = TxOpts(
             skip_confirmation=False,
@@ -453,7 +471,16 @@ async def transfer_spl_token(
             if not receiver_associated_token_public_key:
                 raise Exception("It is not possible to get a Receiver Associated Token Account from this data.")
 
-            transaction.add(
+            # transaction.add(
+            #     create_associated_token_account(
+            #         payer=sender_public_key,
+            #         owner=receiver_public_key,
+            #         mint=token_mint_public_key,
+            #         token_program=token_program_public_key,
+            #     )
+            # )
+
+            params.append(
                 create_associated_token_account(
                     payer=sender_public_key,
                     owner=receiver_public_key,
@@ -543,7 +570,31 @@ async def transfer_spl_token(
             #     ],
             # ),
 
-        transaction.add(
+        # transaction.add(
+        #     spl_token_instructions.transfer_checked(
+        #         spl_token_instructions.TransferCheckedParams(
+        #             program_id=token_program_public_key,    # program_id=TOKEN_2022_PROGRAM_ID
+        #             source=sender_associated_token_public_key,
+        #             mint=token_mint_public_key,
+        #             dest=receiver_associated_token_public_key,
+        #             owner=sender_public_key,
+        #             amount=int(float(amount) * (10 ** int(decimals))),
+        #             decimals=decimals,
+        #         )
+        #     )
+        # )
+
+        # for attempt in range(5):
+        #     try:
+        #         response = await client.send_transaction(transaction, sender_keypair, opts=opts)
+        #         break
+        #     except Exception as e:
+        #         print(f"Error when transferring token: {e}. Attempt {attempt + 1} out of 5.")
+        #         await asyncio.sleep(10)
+        # else:
+        #     raise Exception("Failed to transfer token after 5 attempts.")
+
+        params.append(
             spl_token_instructions.transfer_checked(
                 spl_token_instructions.TransferCheckedParams(
                     program_id=token_program_public_key,    # program_id=TOKEN_2022_PROGRAM_ID
@@ -557,9 +608,13 @@ async def transfer_spl_token(
             )
         )
 
+        msg = Message(params, sender_keypair.pubkey())
+
         for attempt in range(5):
             try:
-                response = await client.send_transaction(transaction, sender_keypair, opts=opts)
+                latest_blockhash = (await client.get_latest_blockhash()).value.blockhash
+                print(f'******** latest_blockhash: {latest_blockhash}')
+                response = await client.send_transaction(Transaction([sender_keypair], msg, latest_blockhash), opts=opts)
                 break
             except Exception as e:
                 print(f"Error when transferring token: {e}. Attempt {attempt + 1} out of 5.")
