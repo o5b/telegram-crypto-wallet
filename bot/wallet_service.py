@@ -8,10 +8,11 @@ from aiogram.types import (BufferedInputFile, CallbackQuery, FSInputFile,
                            URLInputFile)
 from django.contrib.auth.models import AbstractUser
 from PIL import Image
+from spl.token.constants import TOKEN_2022_PROGRAM_ID
 
 from bot.config import LAMPORT_TO_SOL_RATIO
 from bot.keyboards import get_main_keyboard, get_wallet_keyboard
-from bot.services import get_sol_balance, get_spl_token_data, http_client
+from bot.services import get_sol_balance, get_spl_token_data
 from bot.states import FSMWallet
 from bot.utils import get_translation, get_user
 from logger_config import logger
@@ -83,7 +84,7 @@ async def process_wallets_command(callback: CallbackQuery, state: FSMContext, ac
             if action == "balance":
 
                 for i, wallet in enumerate(user_wallets, start=1):
-                    balance = await get_sol_balance(wallet.wallet_address, http_client)
+                    balance = await get_sol_balance(wallet.wallet_address)
 
                     message_text = TRANSLATION['wallet_info_template'].format(
                         number=i,
@@ -92,7 +93,7 @@ async def process_wallets_command(callback: CallbackQuery, state: FSMContext, ac
                         balance=balance
                     )
 
-                    spl_tokens_data = await get_spl_token_data(wallet.wallet_address, http_client)
+                    spl_tokens_data = await get_spl_token_data(wallet.wallet_address, program_id=TOKEN_2022_PROGRAM_ID)
 
                     if spl_tokens_data:
                         for token in spl_tokens_data:

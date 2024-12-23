@@ -4,9 +4,9 @@ import traceback
 from typing import Dict, List
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from spl.token.constants import TOKEN_2022_PROGRAM_ID
 
-from bot.services import (get_sol_balance, get_spl_token_data, http_client,
-                          is_valid_wallet_address)
+from bot.services import get_sol_balance, get_spl_token_data, is_valid_wallet_address
 from bot.utils import get_translation, update_or_create_token
 from logger_config import logger
 from web.applications.wallet.models import Wallet
@@ -61,7 +61,7 @@ async def get_wallet_keyboard(user_wallets: List[Wallet], lang: str) -> InlineKe
     TRANSLATION = await get_translation(lang=lang)
 
     for i, wallet in enumerate(user_wallets, start=1):
-        balance = await get_sol_balance(wallet.wallet_address, http_client)
+        balance = await get_sol_balance(wallet.wallet_address)
 
         wallet_info = TRANSLATION["wallet_info_template"].format(
             number=i,
@@ -102,14 +102,15 @@ async def get_token_keyboard(wallet_address: str, lang: str) -> InlineKeyboardMa
             InlineKeyboardMarkup: The keyboard with token buttons.
     """
     try:
+
         token_buttons = []
         TRANSLATION = await get_translation(lang=lang)
-        sol_balance = await get_sol_balance(wallet_address, http_client)
+        sol_balance = await get_sol_balance(wallet_address)
         sol_token_info = TRANSLATION["token_info_template"].format(name='Solana', symbol='SOL', amount=sol_balance)
         sol_token_button = InlineKeyboardButton(text=sol_token_info, callback_data=f"sol_{sol_balance}")
         token_buttons.append([sol_token_button])
 
-        spl_token_list = await get_spl_token_data(wallet_address, http_client)
+        spl_token_list = await get_spl_token_data(wallet_address, program_id=TOKEN_2022_PROGRAM_ID)
 
         for spl_token in spl_token_list:
 

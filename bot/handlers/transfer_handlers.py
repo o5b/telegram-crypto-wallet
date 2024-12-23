@@ -14,10 +14,10 @@ from bot.config import LAMPORT_TO_SOL_RATIO
 from bot.keyboards import (get_back_keyboard, get_main_keyboard,
                            get_token_keyboard)
 from bot.services import (get_sol_balance, get_spl_token_data,
-                          get_wallet_address_from_private_key, http_client,
+                          get_wallet_address_from_private_key,
                           is_valid_amount, is_valid_private_key,
                           is_valid_wallet_address, transfer_sol_token,
-                          transfer_spl_token)
+                          transfer_spl_token, get_min_sol_balance)
 from bot.states import FSMWallet
 from bot.utils import get_token, get_translation, get_wallet, update_wallet
 from bot.validators import is_valid_wallet_seed_phrase
@@ -284,7 +284,7 @@ async def process_transfer_amount(message: Message, state: FSMContext) -> None:
         try:
             # Запрашиваем минимальный баланс для освобождения от аренды.
             # Аргумент функции - размер данных в байтах, для которых требуется выделить место в памяти.
-            min_sol_balance_resp = (await http_client.get_minimum_balance_for_rent_exemption(1)).value
+            min_sol_balance_resp = await get_min_sol_balance()
             # Извлекаем значение минимального баланса из ответа. Min balance: 897840lamports/1000000000 = 0.00089784 Sol
             min_sol_balance = min_sol_balance_resp / LAMPORT_TO_SOL_RATIO
             logger.debug(f"Token type: {token_type}, SOL balance: {sol_balance}, Min balance: {min_sol_balance}, Spl balance: {spl_balance}, Amount: {amount}")
@@ -312,13 +312,7 @@ async def process_transfer_amount(message: Message, state: FSMContext) -> None:
         print(f'**** balance={sol_balance}, amount={amount}, min_balance={min_sol_balance}')
         if token_type == 'sol':
             if sol_balance >= amount + min_sol_balance:
-                result = await transfer_sol_token(
-                    sender_address,
-                    sender_private_key,
-                    recipient_address,
-                    amount,
-                    http_client,
-                )
+                result = await transfer_sol_token(sender_address, sender_private_key, recipient_address, amount)
 
                 if result:
                     formatted_amount = '{:.6f}'.format(Decimal(str(amount)))
