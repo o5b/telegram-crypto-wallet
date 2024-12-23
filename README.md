@@ -1,4 +1,4 @@
-# Telegram Wallet
+# Telegram cryptocurrency wallet for Solana blockchain
 
 ## The cryptocurrency wallet is under development and is not recommended for use
 
